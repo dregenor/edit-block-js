@@ -2,6 +2,7 @@ import "./shim/object.mixin"
 
 import {EventEmitter} from "./base/event_emitter"
 import {Block} from "./base/block"
+import {Separator} from "./base/separator.js"
 export * from "./blocks/index"
 
 
@@ -46,12 +47,12 @@ export class EditBlockJS extends EventEmitter{
         this.$root = config.root;
 
 
-        this._blocks = (config.blocks || []).map((content)=> {
+        this._blocks = (config.blocks || []).map((content,index)=> {
 
             var block = Block.instantinateBlock(content);
             block.on(
                 Block.EVENTS.data_changed,
-                (val,block)=>this.fire(EditBlockJS.EVENTS.data_changed_block,[val,block])
+                (val,block)=>this.fire(EditBlockJS.EVENTS.data_changed_block,[val,block,index])
             );
             return block
         });
@@ -60,6 +61,7 @@ export class EditBlockJS extends EventEmitter{
     }
 
     render(){
+        this.$root.innerHTML = '';
         this._blocks.forEach(this._addChild.bind(this))
     }
 
@@ -67,8 +69,28 @@ export class EditBlockJS extends EventEmitter{
      * @param block {Block}
      * @private
      */
-    _addChild(block){
-        this.$root.appendChild(block.$el)
+    _addChild(block,index){
+        this.$root.appendChild(block.$el);
+        var separator = new Separator();
+        this.$root.appendChild(separator.$el);
+
+        separator.on(Separator.EVENTS.addNewBlock,this.addNewBlock.bind(this,index+1))
+
+    }
+
+
+    addNewBlock(index,type){
+
+        var block = Block.instantinateBlock({type:type, data:null});
+        block.on(
+            Block.EVENTS.data_changed,
+            (val,block)=>this.fire(EditBlockJS.EVENTS.data_changed_block,[val,block,index])
+        );
+
+        this._blocks.splice(index,0,block);
+        this.render();
+
+        block.fire(Block.EVENTS.start_edit);
     }
 
     /**

@@ -1,4 +1,7 @@
 import {EventEmitter} from "./event_emitter"
+import {DomHelpers as dh} from "../helpers/dom"
+
+
 
 /**
  * @class
@@ -70,6 +73,7 @@ export class Block extends EventEmitter{
      */
     initView(){
         this.$el = document.createElement('div');
+        dh.addClass(this.$el,'block');
     }
 
     /**

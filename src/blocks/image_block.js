@@ -7,7 +7,7 @@ import {DomHelpers as dh} from "../helpers/dom"
  * @class
  * @extends Block
  */
-export class TextBlock extends Block{
+export class ImageBlock extends Block{
 
     /**
      * @type {Node}
@@ -27,7 +27,7 @@ export class TextBlock extends Block{
     static BUTTON = {
         getButton(){
             var el = document.createElement('a');
-            el.textContent = 'TextBlock';
+            el.textContent = 'ImageBlock';
 
             return el;
         }
@@ -39,11 +39,12 @@ export class TextBlock extends Block{
     initView(){
         super.initView();
 
-        var $view = document.createElement('div'),
-            $edit = document.createElement('textarea');
+        var $view = document.createElement('img'),
+            $edit = document.createElement('input');
 
-        dh.addClass($view,'block-text__view');
-        dh.addClass($edit,'block-text__edit');
+        $edit.type = 'Url';
+        dh.addClass($view,'block-image__view');
+        dh.addClass($edit,'block-image__edit');
         dh.toggle($view,false);
         dh.toggle($edit,false);
 
@@ -53,15 +54,15 @@ export class TextBlock extends Block{
         this.$el.appendChild($edit);
         this.$el.appendChild($view);
 
-        this.$view.addEventListener('click',this.fire.bind(this, TextBlock.EVENTS.start_edit  ));
-        this.$edit.addEventListener('blur',this.fireAsync.bind(this, TextBlock.EVENTS.finish_edit ));
+        this.$view.addEventListener('click',this.fire.bind(this, ImageBlock.EVENTS.start_edit  ));
+        this.$edit.addEventListener('blur',this.fireAsync.bind(this, ImageBlock.EVENTS.finish_edit ));
     }
 
     onFinishEdit(){
         var val = this.$edit.value;
         if (val != this.content.data){
             this.content.data = val;
-            this.fire(TextBlock.EVENTS.data_changed,[val,this])
+            this.fire(ImageBlock.EVENTS.data_changed,[val,this])
         }
         super.onFinishEdit();
     }
@@ -83,7 +84,7 @@ export class TextBlock extends Block{
         if (isEdit){
             this.$edit.value = this.content.data || '';
         } else if (isView) {
-            this.$view.textContent = this.content.data || 'empty data';
+            this.$view.src = this.content.data || 'https://placeholdit.imgix.net/~text?txtsize=33&txt=350%C3%97150&w=350&h=150';
         }
 
         dh.toggle(this.$edit,isEdit);
@@ -94,4 +95,4 @@ export class TextBlock extends Block{
 
 //todo decorator bind
 
-Block.registerBlock('text-block', TextBlock)
+Block.registerBlock('image-block', ImageBlock)

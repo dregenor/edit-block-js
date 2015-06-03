@@ -1,8 +1,9 @@
 import {Assets as A} from "./assets"
 
+
 var DH = {
     toggle(el,val){
-        if(val){ el.style.display = 'block' }
+        if(val){ el.style.display = '' }
         else { el.style.display = 'none' }
     },
 
@@ -13,7 +14,13 @@ var DH = {
         DH.toggle(el,false)
     },
     addClass(el,className){
-        DH.toggleClass(el,className,true)
+        if (className instanceof Array){
+            className.forEach(function(cn){
+                DH.toggleClass(el,cn,true)
+            })
+        } else {
+            DH.toggleClass(el,className,true)
+        }
     },
     remClass(el,className){
         DH.toggleClass(el,className,false)
